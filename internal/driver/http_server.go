@@ -1,4 +1,4 @@
-package server
+package driver
 
 import (
 	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
@@ -10,7 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 )
 
-// NewHTTPServer new an HTTP server.
+// NewHTTPServer creates a new HTTP server
 func NewHTTPServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *http.Server {
 	var opts = []http.ServerOption{
 		http.Middleware(

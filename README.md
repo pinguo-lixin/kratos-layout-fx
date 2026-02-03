@@ -7,7 +7,7 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ## Create a service
 ```
 # Create a template project
-kratos new server
+kratos new server --repo=git@github.com:pinguo-lixin/kratos-layout-fx.git
 
 cd server
 # Add a proto template
@@ -48,4 +48,3 @@ docker build -t <your-docker-image-name> .
 # run
 docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>
 ```
-

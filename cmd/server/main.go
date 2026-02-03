@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 
+	"github.com/go-kratos/kratos-layout/internal"
 	"github.com/go-kratos/kratos-layout/internal/conf"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -13,8 +14,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
-
-	_ "go.uber.org/automaxprocs"
+	"go.uber.org/fx"
 )
 
 // go build -ldflags "-X main.Version=x.y.z"
@@ -33,7 +33,48 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
+func main() {
+	flag.Parse()
+
+	// Initialize the application with FX
+	app := fx.New(
+		// Load configuration
+		fx.Provide(loadConfig),
+
+		// Set up logging
+		fx.Provide(setupLogger),
+
+		// Register application modules
+		internal.Modules(),
+
+		// Provide the app creator function
+		fx.Provide(newApp),
+
+		// startup
+		fx.Invoke(func(lifecycle fx.Lifecycle, kapp *kratos.App) {
+			lifecycle.Append(fx.Hook{
+				OnStart: func(ctx context.Context) error {
+					go func() {
+						if err := kapp.Run(); err != nil {
+							panic(err)
+						}
+					}()
+					return nil
+				},
+				OnStop: func(ctx context.Context) error {
+					return kapp.Stop()
+				},
+			})
+		}),
+	)
+
+	// Start the application
+	app.Run()
+}
+
+// newApp creates a Kratos application using global variables from main
+func newApp(logger log.Logger, httpServer *http.Server, grpcServer *grpc.Server) *kratos.App {
+	id, _ := os.Hostname()
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
@@ -41,29 +82,23 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
 		kratos.Server(
-			gs,
-			hs,
+			httpServer,
+			grpcServer,
 		),
 	)
 }
 
-func main() {
-	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
-		"ts", log.DefaultTimestamp,
-		"caller", log.DefaultCaller,
-		"service.id", id,
-		"service.name", Name,
-		"service.version", Version,
-		"trace.id", tracing.TraceID(),
-		"span.id", tracing.SpanID(),
-	)
+// loadConfig loads the application configuration
+func loadConfig() *conf.Bootstrap {
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagconf),
 		),
 	)
-	defer c.Close()
+
+	defer func() {
+		_ = c.Close()
+	}()
 
 	if err := c.Load(); err != nil {
 		panic(err)
@@ -74,14 +109,19 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
-	if err != nil {
-		panic(err)
-	}
-	defer cleanup()
+	return &bc
+}
 
-	// start and wait for stop signal
-	if err := app.Run(); err != nil {
-		panic(err)
-	}
+// setupLogger sets up the application logger
+func setupLogger() log.Logger {
+	logger := log.NewStdLogger(os.Stdout)
+	return log.With(logger,
+		"ts", log.DefaultTimestamp,
+		"caller", log.DefaultCaller,
+		"service.id", id,
+		"service.name", Name,
+		"service.version", Version,
+		"trace.id", tracing.TraceID(),
+		"span.id", tracing.SpanID(),
+	)
 }

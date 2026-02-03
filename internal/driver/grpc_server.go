@@ -1,4 +1,4 @@
-package server
+package driver
 
 import (
 	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
@@ -10,7 +10,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 )
 
-// NewGRPCServer new a gRPC server.
+// NewGRPCServer creates a new gRPC server
 func NewGRPCServer(c *conf.Server, greeter *service.GreeterService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
