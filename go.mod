@@ -4,7 +4,6 @@ go 1.24
 
 require (
 	github.com/go-kratos/kratos/v2 v2.9.2
-	go.uber.org/automaxprocs v1.5.1
 	go.uber.org/fx v1.24.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
 	google.golang.org/grpc v1.65.0
