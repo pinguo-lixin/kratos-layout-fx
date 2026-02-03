@@ -1,4 +1,4 @@
-module github.com/go-kratos/kratos-layout
+module github.com/pinguo-lixin/kratos-layout-fx
 
 go 1.24
 

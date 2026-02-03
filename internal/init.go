@@ -3,11 +3,11 @@ package internal
 import (
 	"go.uber.org/fx"
 
-	"github.com/go-kratos/kratos-layout/internal/biz"
-	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos-layout/internal/data"
-	"github.com/go-kratos/kratos-layout/internal/driver"
-	"github.com/go-kratos/kratos-layout/internal/service"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/biz"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/conf"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/data"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/driver"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/service"
 )
 
 // ConfigsParams provides the config split

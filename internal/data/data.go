@@ -1,7 +1,7 @@
 package data
 
 import (
-	"github.com/go-kratos/kratos-layout/internal/conf"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/conf"
 )
 
 // Data .

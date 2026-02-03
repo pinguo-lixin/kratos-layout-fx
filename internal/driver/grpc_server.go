@@ -1,9 +1,9 @@
 package driver
 
 import (
-	v1 "github.com/go-kratos/kratos-layout/api/helloworld/v1"
-	"github.com/go-kratos/kratos-layout/internal/conf"
-	"github.com/go-kratos/kratos-layout/internal/service"
+	v1 "github.com/pinguo-lixin/kratos-layout-fx/api/helloworld/v1"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/conf"
+	"github.com/pinguo-lixin/kratos-layout-fx/internal/service"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
